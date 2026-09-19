@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="th" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Smart Emergency Box — IoT Safety Monitoring Dashboard">
+  <title>Smart Emergency Box</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Cpath d='M18 12h28v40H18z' rx='4' fill='%231e293b' stroke='%2322c55e' stroke-width='4'/%3E%3Cpath d='M32 21v22M21 32h22' stroke='%23f8fafc' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand dashboard-nav sticky-top" aria-label="แถบนำทางหลัก">
+    <div class="container-fluid dashboard-shell">
+      <a class="navbar-brand d-flex align-items-center gap-3" href="#" aria-label="Smart Emergency Box dashboard">
+        <span class="brand-mark"><i class="bi bi-shield-plus"></i></span>
+        <span><strong>Smart Emergency Box</strong><small>IoT SAFETY CONTROL</small></span>
+      </a>
+      <div class="nav-actions ms-auto">
+        <div class="connection-pill offline" id="connectionPill"><span class="status-dot"></span><span id="deviceStatusText">Unknown</span></div>
+        <div class="last-updated d-none d-md-block"><span>LAST UPDATED</span><strong id="topLastUpdated">—</strong></div>
+        <div class="dropdown">
+          <button class="icon-button position-relative" data-bs-toggle="dropdown" aria-expanded="false" aria-label="เปิดการแจ้งเตือน">
+            <i class="bi bi-bell"></i><span class="notification-count d-none" id="notificationBadge">0</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end notification-menu p-0">
+            <div class="notification-header"><strong>Notifications</strong><button id="clearNotifications" type="button" disabled>Mark all read</button></div>
+            <div id="notificationList" class="notification-list"><div class="empty-notification">No new notifications</div></div>
+          </div>
+        </div>
+        <button class="profile-button" aria-label="โปรไฟล์ผู้ใช้"><span>SE</span><span class="d-none d-lg-inline">Operator</span><i class="bi bi-chevron-down d-none d-lg-inline"></i></button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-fluid dashboard-shell py-4">
+    <!-- The existing control panel moves here only on phones; no duplicate buttons. -->
+    <div id="mobileEmergencySlot" class="mobile-emergency-slot"></div>
+    <section class="status-hero status-offline" id="systemStatusCard" aria-live="polite">
+      <div class="status-icon"><i class="bi bi-cloud-slash" id="systemStatusIcon"></i></div>
+      <div class="status-copy">
+        <div class="eyebrow">CURRENT SYSTEM STATUS</div>
+        <h1 id="systemStatusTitle">WAITING FOR DATA</h1>
+        <p id="systemStatusMessage">Waiting for backend data. Safety status has not been confirmed.</p>
+      </div>
+      <div class="hero-details">
+        <span>MONITORING</span><strong id="monitoringCount">—</strong>
+        <span>BUZZER</span><strong id="heroBuzzerStatus" class="text-secondary">UNKNOWN</strong>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div><span class="eyebrow">LIVE TELEMETRY</span><h2>Sensor Overview</h2></div>
+      <span class="live-label inactive"><span></span><span id="liveDataLabel">No live data</span></span>
+    </div>
+    <section class="row g-3 sensor-overview" aria-label="ข้อมูลเซนเซอร์">
+      <div class="col-12 col-md-6 col-xl-3"><article class="sensor-card" id="temperatureCard"><div class="sensor-top"><span class="sensor-icon temp"><i class="bi bi-thermometer-half"></i></span><span class="sensor-badge unknown" id="temperatureBadge">UNKNOWN</span></div><span class="sensor-name">Temperature</span><div class="sensor-value"><strong id="temperatureValue">—</strong><span>°C</span></div><div class="sensor-footer"><i class="bi bi-clock"></i> <span class="sensor-time">No live reading</span></div></article></div>
+      <div class="col-12 col-md-6 col-xl-3"><article class="sensor-card" id="humidityCard"><div class="sensor-top"><span class="sensor-icon humidity"><i class="bi bi-droplet-half"></i></span><span class="sensor-badge unknown" id="humidityBadge">UNKNOWN</span></div><span class="sensor-name">Humidity</span><div class="sensor-value"><strong id="humidityValue">—</strong><span>%</span></div><div class="sensor-footer"><i class="bi bi-clock"></i> <span class="sensor-time">No live reading</span></div></article></div>
+      <div class="col-12 col-md-6 col-xl-3"><article class="sensor-card" id="gasCard"><div class="sensor-top"><span class="sensor-icon gas"><i class="bi bi-cloud-haze2"></i></span><span class="sensor-badge unknown" id="gasBadge">UNKNOWN</span></div><span class="sensor-name">Gas Level</span><div class="sensor-value"><strong id="gasValue">—</strong><span>ppm</span></div><div class="sensor-footer"><i class="bi bi-clock"></i> <span class="sensor-time">No live reading</span></div></article></div>
+      <div class="col-12 col-md-6 col-xl-3"><article class="sensor-card" id="waterCard"><div class="sensor-top"><span class="sensor-icon water"><i class="bi bi-water"></i></span><span class="sensor-badge unknown" id="waterBadge">UNKNOWN</span></div><span class="sensor-name">Water Detection</span><div class="sensor-value water-value"><strong id="waterValue">Unknown</strong></div><div class="sensor-footer"><i class="bi bi-clock"></i> <span class="sensor-time">No live reading</span></div></article></div>
+    </section>
+
+    <p class="mobile-sensor-updated"><i class="bi bi-clock me-1"></i><span id="mobileSensorUpdated">No live reading</span></p>
+
+    <section class="row g-3 mt-1">
+      <div class="col-12 col-xl-5">
+        <article class="panel h-100">
+          <div class="panel-header"><div><span class="eyebrow">MQ-2 SENSOR</span><h2>Gas Level Monitor</h2></div><div class="form-check form-switch gas-switch"><input class="form-check-input" type="checkbox" role="switch" id="gasDetectionToggle" disabled><label class="form-check-label" for="gasDetectionToggle"><strong>Gas Detection</strong><span id="gasDetectionLabel">Unknown</span></label></div></div>
+          <div id="gasEnabledContent" class="d-none">
+            <div class="gauge-readout"><div><span>CURRENT READING</span><strong id="gaugeValue">—</strong></div><span class="sensor-badge unknown" id="gaugeStatus">UNKNOWN</span></div>
+            <div class="gas-gauge" id="gasGauge"><div class="gauge-track"><span class="gauge-normal"></span><span class="gauge-warning"></span><span class="gauge-emergency"></span><i id="gasMarker"></i></div><div class="gauge-labels"><span>—</span><span>—</span><span>—</span><span>—</span></div></div>
+            <div class="gas-message unknown" id="gasMessage"><i class="bi bi-check-circle-fill"></i><span><strong>Waiting for data</strong><small>No gas reading received.</small></span></div>
+          </div>
+          <div class="disabled-state" id="gasDisabledContent"><i class="bi bi-cloud-slash"></i><strong>Gas readings are unavailable.</strong><span>Waiting for fresh sensor data from the backend.</span></div>
+        </article>
+      </div>
+      <div class="col-12 col-xl-7">
+        <article class="panel h-100">
+          <div class="panel-header chart-header"><div><span class="eyebrow">SENSOR HISTORY</span><h2>Environmental Monitoring</h2></div><div class="time-filters" role="group" aria-label="เลือกช่วงเวลากราฟ"><button class="active" data-range="1h">1 Hour</button><button data-range="6h">6 Hours</button><button data-range="24h">24 Hours</button><button data-range="7d">7 Days</button></div></div>
+          <div class="chart-wrap"><canvas id="environmentChart" aria-label="กราฟอุณหภูมิ ความชื้น และระดับแก๊ส"></canvas></div>
+          <p class="data-message" id="chartState" role="status">No sensor history received.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="row g-3 mt-1">
+      <div class="col-12 col-xl-7">
+        <article class="panel emergency-panel">
+          <div class="panel-header"><div><span class="eyebrow">MANUAL OVERRIDE</span><h2>Emergency Control</h2></div><span class="control-lock"><i class="bi bi-shield-lock"></i> Confirmation required</span></div>
+          <div class="control-grid">
+            <button class="control-btn emergency" data-action="emergency" disabled><i class="bi bi-exclamation-triangle-fill"></i><span><strong>EMERGENCY</strong><small>Request emergency activation</small></span></button>
+            <button class="control-btn silence" data-action="silence" id="silenceButton" disabled><i class="bi bi-volume-mute-fill"></i><span><strong>Silence Alarm</strong><small>Mute buzzer only</small></span></button>
+            <button class="control-btn reset" data-action="reset" disabled><i class="bi bi-arrow-counterclockwise"></i><span><strong>Reset Alert</strong><small>Clear acknowledged alerts</small></span></button>
+          </div>
+          <div class="buzzer-strip"><span class="buzzer-indicator" id="buzzerIndicator"><i class="bi bi-volume-up"></i></span><div><span>BUZZER STATUS</span><strong id="buzzerStatus">UNKNOWN</strong></div><small id="buzzerDescription">Awaiting device confirmation</small></div>
+          <p class="data-message" id="commandMessage" role="status">Controls are disabled until fresh device data is received.</p>
+        </article>
+      </div>
+      <div class="col-12 col-xl-5">
+        <article class="panel h-100">
+          <div class="panel-header"><div><span class="eyebrow">BACKEND CONNECTION</span><h2>Data Connection</h2></div><i class="bi bi-hdd-network text-info"></i></div>
+          <strong id="connectionStatus" role="status">Waiting for API</strong>
+          <p class="data-message" id="connectionMessage">Controls are disabled until fresh device data is received.</p>
+          <div class="connection-details"><span>DEVICE ID</span><strong id="apiDeviceId">—</strong></div>
+          <button type="button" class="btn btn-outline-info w-100 mt-3" id="refreshConnection"><i class="bi bi-arrow-clockwise me-2"></i>Refresh connection</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="row g-3 mt-1">
+      <div class="col-12 col-xl-8">
+        <article class="panel history-panel">
+          <div class="panel-header"><div><span class="eyebrow">EVENT LOG</span><h2>Alert History</h2></div><span class="record-count" id="recordCount">0 records</span></div>
+          <div class="table-responsive"><table class="table alert-table align-middle mb-0"><thead><tr><th>Date / Time</th><th>Event</th><th>Type</th><th>Status</th></tr></thead><tbody id="alertHistoryBody"></tbody></table></div>
+        </article>
+      </div>
+      <div class="col-12 col-xl-4">
+        <article class="panel hardware-panel h-100">
+          <div class="panel-header"><div><span class="eyebrow">HARDWARE HEALTH</span><h2>Device Status</h2></div><span class="uptime">UPTIME <strong id="uptime">—</strong></span></div>
+          <div class="device-list" id="deviceList"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3"><div id="systemToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><i class="bi bi-shield-exclamation me-2"></i><strong class="me-auto">Smart Emergency Box</strong><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button></div><div class="toast-body" id="toastMessage"></div></div></div>
+
+  <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content confirm-modal"><div class="modal-body"><div class="modal-symbol" id="confirmationIcon"><i class="bi bi-exclamation-triangle"></i></div><h2 id="confirmationTitle">Confirm action</h2><p id="confirmationMessage"></p><div class="modal-actions"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-danger" id="confirmActionButton">Confirm</button></div></div></div></div></div>
+
+  <footer><span>Smart Emergency Box — IoT Safety Monitoring System</span><span>Live API Dashboard</span></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+  <script src="api-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
