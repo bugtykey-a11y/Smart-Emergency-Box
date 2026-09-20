@@ -48,6 +48,10 @@ const UI_COPY = {
     "range-1h": "1 ชั่วโมง", "range-6h": "6 ชั่วโมง", "range-24h": "24 ชั่วโมง", "range-7d": "7 วัน"
   }
 };
+const PAGE_LABELS = {
+  en: { dashboard: "Dashboard", history: "History", devices: "Devices", notifications: "Notifications", settings: "Settings", help: "Emergency guide" },
+  th: { dashboard: "ภาพรวม", history: "ประวัติ", devices: "อุปกรณ์", notifications: "การแจ้งเตือน", settings: "ตั้งค่า", help: "คู่มือฉุกเฉิน" }
+};
 const SYSTEM_STATUSES = ["NORMAL", "WARNING", "EMERGENCY", "OFFLINE"];
 const SENSOR_STATUSES = ["NORMAL", "WARNING", "EMERGENCY", "UNKNOWN"];
 const HARDWARE = [
@@ -121,6 +125,15 @@ function bindEvents() {
     fetchSensorHistory();
   });
   $("clearNotifications").addEventListener("click", acknowledgeNotifications);
+  $("alertHistoryBody").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-alert-index]");
+    if (!button) return;
+    const item = state.snapshot?.alerts?.[Number(button.dataset.alertIndex)];
+    if (!item) return;
+    $("alertDetailTitle").textContent = item.event;
+    $("alertDetailBody").innerHTML = `<p>${state.language === "th" ? "วัน / เวลา" : "Date / time"}: ${escapeHtml(formatDateTime(item.createdAt))}</p><p>${state.language === "th" ? "ประเภท" : "Type"}: ${escapeHtml(item.type)}</p><p>${state.language === "th" ? "สถานะ" : "Status"}: ${escapeHtml(item.status)}</p><p>${state.language === "th" ? "รหัสอุปกรณ์" : "Device ID"}: ${escapeHtml(state.snapshot.deviceId)}</p>`;
+    new bootstrap.Modal($("alertDetailModal")).show();
+  });
   document.querySelectorAll("[data-range]").forEach((button) =>
     button.addEventListener("click", () => {
       state.range = button.dataset.range;
@@ -133,6 +146,12 @@ function bindEvents() {
 // Keeps static labels in one place. The selected language is remembered per browser.
 function applyLanguage() {
   const copy = UI_COPY[state.language];
+  document.querySelectorAll("[data-page-label]").forEach((link) => {
+    link.textContent = PAGE_LABELS[state.language][link.dataset.pageLabel];
+  });
+  document.querySelectorAll("[data-page-menu-label]").forEach((label) => {
+    label.textContent = state.language === "th" ? "เมนูเพิ่มเติม" : "More";
+  });
   document.documentElement.lang = state.language;
   document.querySelector('meta[name="description"]').content = copy.footer;
   const labels = {
@@ -167,6 +186,7 @@ function applyLanguage() {
   document.querySelectorAll("[data-range]").forEach((button) => { button.textContent = copy[`range-${button.dataset.range}`]; });
   $("languageToggle").textContent = state.language === "en" ? "ไทย" : "EN";
   $("languageToggle").setAttribute("aria-label", state.language === "en" ? "เปลี่ยนเป็นภาษาไทย" : "Switch to English");
+  $("alertDetailClose").textContent = state.language === "th" ? "ปิด" : "Close";
 }
 
 // Single HTTP adapter: timeout, cookies, JSON errors, no automatic POST retries.
@@ -461,8 +481,8 @@ async function acknowledgeNotifications() {
 function renderAlertHistory() {
   const items = state.snapshot?.alerts || [];
   $("recordCount").textContent = `${items.length} records${!dataIsFresh() && items.length ? " · last received" : ""}`;
-  $("alertHistoryBody").innerHTML = items.length ? items.slice(0, 30).map((item) =>
-    `<tr><td>${escapeHtml(formatDateTime(item.createdAt))}</td><td><span class="event-icon"><i class="bi ${typeIcon(item.type)}"></i></span>${escapeHtml(item.event)}</td><td><span class="type-pill ${item.type.toLowerCase()}">${item.type}</span></td><td><span class="event-status ${item.status.toLowerCase()}">${item.status}</span></td></tr>`).join("")
+  $("alertHistoryBody").innerHTML = items.length ? items.slice(0, 30).map((item, index) =>
+    `<tr><td>${escapeHtml(formatDateTime(item.createdAt))}</td><td><button type="button" class="alert-detail-trigger" data-alert-index="${index}" aria-label="${state.language === "th" ? "ดูรายละเอียด" : "View details"}: ${escapeHtml(item.event)}"><span class="event-icon"><i class="bi ${typeIcon(item.type)}"></i></span>${escapeHtml(item.event)}</button></td><td><span class="type-pill ${item.type.toLowerCase()}">${item.type}</span></td><td><span class="event-status ${item.status.toLowerCase()}">${item.status}</span></td></tr>`).join("")
     : '<tr><td colspan="4" class="text-center py-4 text-secondary">No alert history received from the backend.</td></tr>';
 }
 

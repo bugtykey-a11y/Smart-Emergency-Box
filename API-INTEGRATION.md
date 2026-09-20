@@ -38,6 +38,17 @@ Backend ต้องอ่านฐานข้อมูล รับสถา�
 | POST | /commands.php?deviceId=seb-001 | ขอส่งคำสั่งให้ ESP32 |
 | POST | /notifications-acknowledge.php?deviceId=seb-001 | ทำเครื่องหมาย notification ว่าอ่านแล้ว |
 
+## หน้าเว็บเพิ่มเติม
+
+`history.html`, `devices.html`, `notifications.html` และ `settings.html` อ่านข้อมูลจาก
+`dashboard.php` ที่มีอยู่แล้ว หน้า History จึงค้น/กรองได้เฉพาะ alert ล่าสุดที่ API ส่งมา
+(สูงสุด 30 รายการ) และหน้า Notifications แสดงเฉพาะรายการล่าสุด (สูงสุด 12 รายการ)
+
+หน้า Settings แสดง `gasScale` และ `deviceId` จาก API แบบอ่านอย่างเดียว ยังไม่มีการบันทึกค่า
+หรือการตั้งค่าช่องทางแจ้งเตือนมือถือ หากต้องการใช้งานจริงให้ทีม backend กำหนด endpoint
+สำหรับอ่าน/บันทึก settings, ตรวจสอบสิทธิ์, ตรวจค่าขอบเขต และส่งค่าที่บันทึกไปยัง ESP32
+รวมถึง endpoint สำหรับประวัติ alerts/notifications แบบแบ่งหน้าและค้นหาย้อนหลัง
+
 GET ถูกเรียกทุก 5 วินาทีสำหรับ dashboard แบบไม่ซ้อน request
 กราฟโหลดเมื่อเปิดหน้า เปลี่ยนช่วงเวลา หรือกด Refresh connection เท่านั้น
 range รองรับ 1h, 6h, 24h, 7d; backend ควร aggregate/จำกัดจำนวน points ให้เหมาะสม
