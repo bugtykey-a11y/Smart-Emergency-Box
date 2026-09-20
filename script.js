@@ -15,6 +15,39 @@ const API = Object.freeze({
     ...window.SMART_BOX_CONFIG?.endpoints }
 });
 const $ = (id) => document.getElementById(id);
+const LANGUAGE_KEY = "smart-emergency-box-language";
+const UI_COPY = {
+  en: {
+    "brand-subtitle": "IoT SAFETY CONTROL", "last-updated": "LAST UPDATED", "notifications": "Notifications",
+    "mark-read": "Mark all read", "operator": "Operator", "current-status": "CURRENT SYSTEM STATUS",
+    "monitoring": "MONITORING", "buzzer": "BUZZER", "telemetry": "LIVE TELEMETRY", "sensor-overview": "Sensor Overview",
+    "temperature": "Temperature", "humidity": "Humidity", "gas-level": "Gas Level", "water-detection": "Water Detection",
+    "gas-sensor": "MQ-2 SENSOR", "gas-monitor": "Gas Level Monitor", "gas-detection": "Gas Detection",
+    "current-reading": "CURRENT READING", "sensor-history": "SENSOR HISTORY", "environmental": "Environmental Monitoring",
+    "manual-override": "MANUAL OVERRIDE", "emergency-control": "Emergency Control", "confirmation": "Confirmation required",
+    "emergency": "EMERGENCY", "emergency-help": "Request emergency activation", "silence": "Silence Alarm", "silence-help": "Mute buzzer only",
+    "reset": "Reset Alert", "reset-help": "Clear acknowledged alerts", "buzzer-status": "BUZZER STATUS",
+    "backend": "BACKEND CONNECTION", "data-connection": "Data Connection", "device-id": "DEVICE ID", "refresh": "Refresh connection",
+    "event-log": "EVENT LOG", "alert-history": "Alert History", "date-time": "Date / Time", "event": "Event", "type": "Type", "status": "Status",
+    "hardware": "HARDWARE HEALTH", "device-status": "Device Status", "cancel": "Cancel", "footer": "Smart Emergency Box — IoT Safety Monitoring System", "footer-api": "Live API Dashboard",
+    "range-1h": "1 Hour", "range-6h": "6 Hours", "range-24h": "24 Hours", "range-7d": "7 Days"
+  },
+  th: {
+    "brand-subtitle": "ศูนย์ควบคุมความปลอดภัย IoT", "last-updated": "อัปเดตล่าสุด", "notifications": "การแจ้งเตือน",
+    "mark-read": "อ่านทั้งหมดแล้ว", "operator": "ผู้ควบคุม", "current-status": "สถานะระบบปัจจุบัน",
+    "monitoring": "การตรวจสอบ", "buzzer": "เสียงเตือน", "telemetry": "ข้อมูลเซนเซอร์สด", "sensor-overview": "ภาพรวมเซนเซอร์",
+    "temperature": "อุณหภูมิ", "humidity": "ความชื้น", "gas-level": "ระดับแก๊ส", "water-detection": "การตรวจพบน้ำ",
+    "gas-sensor": "เซนเซอร์ MQ-2", "gas-monitor": "ตรวจวัดระดับแก๊ส", "gas-detection": "ตรวจจับแก๊ส",
+    "current-reading": "ค่าปัจจุบัน", "sensor-history": "ประวัติเซนเซอร์", "environmental": "การตรวจสอบสภาพแวดล้อม",
+    "manual-override": "ควบคุมด้วยตนเอง", "emergency-control": "ควบคุมฉุกเฉิน", "confirmation": "ต้องยืนยันคำสั่ง",
+    "emergency": "ฉุกเฉิน", "emergency-help": "ขอเปิดโหมดฉุกเฉิน", "silence": "ปิดเสียงเตือน", "silence-help": "ปิดเฉพาะเสียง Buzzer",
+    "reset": "รีเซ็ตการแจ้งเตือน", "reset-help": "ล้างการแจ้งเตือนที่รับทราบแล้ว", "buzzer-status": "สถานะ BUZZER",
+    "backend": "การเชื่อมต่อระบบหลังบ้าน", "data-connection": "การเชื่อมต่อข้อมูล", "device-id": "รหัสอุปกรณ์", "refresh": "รีเฟรชการเชื่อมต่อ",
+    "event-log": "บันทึกเหตุการณ์", "alert-history": "ประวัติการแจ้งเตือน", "date-time": "วัน / เวลา", "event": "เหตุการณ์", "type": "ประเภท", "status": "สถานะ",
+    "hardware": "สถานะฮาร์ดแวร์", "device-status": "สถานะอุปกรณ์", "cancel": "ยกเลิก", "footer": "Smart Emergency Box — ระบบตรวจสอบความปลอดภัย IoT", "footer-api": "แดชบอร์ด API แบบสด",
+    "range-1h": "1 ชั่วโมง", "range-6h": "6 ชั่วโมง", "range-24h": "24 ชั่วโมง", "range-7d": "7 วัน"
+  }
+};
 const SYSTEM_STATUSES = ["NORMAL", "WARNING", "EMERGENCY", "OFFLINE"];
 const SENSOR_STATUSES = ["NORMAL", "WARNING", "EMERGENCY", "UNKNOWN"];
 const HARDWARE = [
@@ -23,13 +56,15 @@ const HARDWARE = [
   ["oled", "OLED Display", "bi-display"], ["buzzer", "Buzzer", "bi-volume-up"]
 ];
 const state = { snapshot: null, connection: "waiting", error: "", busy: false,
-  polling: false, range: "1h", historyVersion: 0, pendingAction: null };
+  polling: false, range: "1h", historyVersion: 0, pendingAction: null,
+  language: localStorage.getItem(LANGUAGE_KEY) === "th" ? "th" : "en" };
 let chart, modal, toast, pollTimer;
 
 document.addEventListener("DOMContentLoaded", initializeDashboard);
 window.addEventListener("pagehide", () => clearTimeout(pollTimer));
 
 function initializeDashboard() {
+  applyLanguage();
   initializeMobileLayout();
   if (!window.bootstrap) {
     $("connectionMessage").textContent = "Bootstrap failed to load. Check your internet connection and reload.";
@@ -66,6 +101,12 @@ function initializeMobileLayout() {
 }
 
 function bindEvents() {
+  $("languageToggle").addEventListener("click", () => {
+    state.language = state.language === "en" ? "th" : "en";
+    localStorage.setItem(LANGUAGE_KEY, state.language);
+    applyLanguage();
+    updateDashboard();
+  });
   document.querySelectorAll("[data-action]").forEach((button) =>
     button.addEventListener("click", () => requestAction(button.dataset.action)));
   $("gasDetectionToggle").addEventListener("change", (event) => {
@@ -87,6 +128,45 @@ function bindEvents() {
         item.classList.toggle("active", item === button));
       fetchSensorHistory();
     }));
+}
+
+// Keeps static labels in one place. The selected language is remembered per browser.
+function applyLanguage() {
+  const copy = UI_COPY[state.language];
+  document.documentElement.lang = state.language;
+  document.querySelector('meta[name="description"]').content = copy.footer;
+  const labels = {
+    ".navbar-brand small": "brand-subtitle", ".last-updated span": "last-updated",
+    ".notification-header strong": "notifications", "#clearNotifications": "mark-read",
+    ".profile-button > span:nth-child(2)": "operator", ".status-copy .eyebrow": "current-status",
+    ".hero-details span:nth-child(1)": "monitoring", ".hero-details span:nth-child(3)": "buzzer",
+    ".section-heading .eyebrow": "telemetry", ".section-heading h2": "sensor-overview",
+    "#temperatureCard .sensor-name": "temperature", "#humidityCard .sensor-name": "humidity",
+    "#gasCard .sensor-name": "gas-level", "#waterCard .sensor-name": "water-detection",
+    ".gas-switch label strong": "gas-detection", ".gauge-readout > div span": "current-reading",
+    ".emergency-panel .panel-header .eyebrow": "manual-override", ".emergency-panel h2": "emergency-control",
+    ".control-lock": "confirmation", ".control-btn.emergency strong": "emergency", ".control-btn.emergency small": "emergency-help",
+    ".control-btn.silence strong": "silence", ".control-btn.silence small": "silence-help", ".control-btn.reset strong": "reset",
+    ".control-btn.reset small": "reset-help", ".buzzer-strip div span": "buzzer-status",
+    ".history-panel .panel-header .eyebrow": "event-log", ".history-panel h2": "alert-history",
+    ".alert-table th:nth-child(1)": "date-time", ".alert-table th:nth-child(2)": "event", ".alert-table th:nth-child(3)": "type", ".alert-table th:nth-child(4)": "status",
+    ".hardware-panel .panel-header .eyebrow": "hardware", ".hardware-panel h2": "device-status",
+    ".connection-details span": "device-id", ".modal-actions .btn-secondary": "cancel", "footer span:first-child": "footer", "footer span:last-child": "footer-api"
+  };
+  Object.entries(labels).forEach(([selector, key]) => document.querySelectorAll(selector).forEach((element) => { element.textContent = copy[key]; }));
+  document.querySelectorAll(".panel-header").forEach((header) => {
+    const eyebrow = header.querySelector(".eyebrow"), heading = header.querySelector("h2");
+    if (!eyebrow || !heading) return;
+    const text = heading.textContent;
+    if (text.includes("Gas") || text.includes("แก๊ส")) { eyebrow.textContent = copy["gas-sensor"]; heading.textContent = copy["gas-monitor"]; }
+    if (text.includes("Environmental") || text.includes("สภาพแวดล้อม")) { eyebrow.textContent = copy["sensor-history"]; heading.textContent = copy.environmental; }
+    if (text.includes("Data Connection") || text.includes("การเชื่อมต่อข้อมูล")) { eyebrow.textContent = copy.backend; heading.textContent = copy["data-connection"]; }
+  });
+  const refresh = $("refreshConnection");
+  refresh.innerHTML = `<i class="bi bi-arrow-clockwise me-2"></i>${copy.refresh}`;
+  document.querySelectorAll("[data-range]").forEach((button) => { button.textContent = copy[`range-${button.dataset.range}`]; });
+  $("languageToggle").textContent = state.language === "en" ? "ไทย" : "EN";
+  $("languageToggle").setAttribute("aria-label", state.language === "en" ? "เปลี่ยนเป็นภาษาไทย" : "Switch to English");
 }
 
 // Single HTTP adapter: timeout, cookies, JSON errors, no automatic POST retries.

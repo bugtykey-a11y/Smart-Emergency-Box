@@ -33,6 +33,8 @@ button, input { font: inherit; }
 .last-updated span { color: var(--muted); font-size: .61rem; letter-spacing: .12em; }
 .last-updated strong { margin-top: 3px; font-size: .77rem; }
 .icon-button, .profile-button { border: 1px solid var(--line); color: var(--text); background: var(--surface); }
+.language-button { min-width: 43px; height: 40px; padding: 0 9px; border: 1px solid var(--line); border-radius: 11px; color: #bfdbfe; background: var(--surface); font-size: .72rem; font-weight: 800; }
+.language-button:hover { border-color: #3b82f6; background: #17253b; }
 .icon-button { width: 40px; height: 40px; border-radius: 11px; font-size: 1.05rem; }
 .profile-button { display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px; border-radius: 12px; font-size: .8rem; }
 .profile-button > span:first-child { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 8px; color: #bfdbfe; background: #1e3a5f; font-weight: 800; }
