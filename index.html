@@ -20,6 +20,7 @@
       <div class="nav-actions ms-auto">
         <div class="connection-pill offline" id="connectionPill"><span class="status-dot"></span><span id="deviceStatusText">Unknown</span></div>
         <div class="last-updated d-none d-md-block"><span>LAST UPDATED</span><strong id="topLastUpdated">—</strong></div>
+        <button class="language-button" id="languageToggle" type="button" aria-label="Switch language">ไทย</button>
         <div class="dropdown">
           <button class="icon-button position-relative" data-bs-toggle="dropdown" aria-expanded="false" aria-label="เปิดการแจ้งเตือน">
             <i class="bi bi-bell"></i><span class="notification-count d-none" id="notificationBadge">0</span>
@@ -32,6 +33,17 @@
         <button class="profile-button" aria-label="โปรไฟล์ผู้ใช้"><span>SE</span><span class="d-none d-lg-inline">Operator</span><i class="bi bi-chevron-down d-none d-lg-inline"></i></button>
       </div>
     </div>
+  </nav>
+
+  <nav class="page-navigation dashboard-shell mx-auto" aria-label="Dashboard pages">
+    <a class="active" href="index.html" data-page-label="dashboard">Dashboard</a>
+    <details class="page-menu"><summary data-page-menu-label>More</summary><div class="page-menu-list">
+      <a href="history.html" data-page-label="history">History</a>
+      <a href="devices.html" data-page-label="devices">Devices</a>
+      <a href="notifications.html" data-page-label="notifications">Notifications</a>
+      <a href="settings.html" data-page-label="settings">Settings</a>
+      <a href="help.html" data-page-label="help">Emergency guide</a>
+    </div></details>
   </nav>
 
   <main class="container-fluid dashboard-shell py-4">
@@ -127,6 +139,7 @@
   <div class="toast-container position-fixed bottom-0 end-0 p-3"><div id="systemToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"><div class="toast-header"><i class="bi bi-shield-exclamation me-2"></i><strong class="me-auto">Smart Emergency Box</strong><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button></div><div class="toast-body" id="toastMessage"></div></div></div>
 
   <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content confirm-modal"><div class="modal-body"><div class="modal-symbol" id="confirmationIcon"><i class="bi bi-exclamation-triangle"></i></div><h2 id="confirmationTitle">Confirm action</h2><p id="confirmationMessage"></p><div class="modal-actions"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-danger" id="confirmActionButton">Confirm</button></div></div></div></div></div>
+  <div class="modal fade" id="alertDetailModal" tabindex="-1" aria-labelledby="alertDetailTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content confirm-modal"><div class="modal-body"><h2 id="alertDetailTitle"></h2><div id="alertDetailBody" class="alert-detail-body"></div><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="alertDetailClose">Close</button></div></div></div></div>
 
   <footer><span>Smart Emergency Box — IoT Safety Monitoring System</span><span>Live API Dashboard</span></footer>
 
