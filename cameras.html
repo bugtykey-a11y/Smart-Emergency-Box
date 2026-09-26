@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="th" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CCTV and traffic situation monitoring — Smart Emergency Box">
+  <title>CCTV Monitor — Smart Emergency Box</title>
+  <link rel="stylesheet" href="style.css?v=20260927-3">
+</head>
+<body>
+  <header class="dashboard-nav">
+    <nav class="dashboard-shell page-navigation" aria-label="Dashboard pages">
+      <a href="index.html" data-page-label="dashboard">Dashboard</a>
+      <details class="page-menu">
+        <summary data-page-menu-label>More</summary>
+        <div class="page-menu-list">
+          <a href="history.html" data-page-label="history">History</a>
+          <a href="devices.html" data-page-label="devices">Devices</a>
+          <a class="active" href="cameras.html" data-page-label="cameras">CCTV Monitor</a>
+          <a href="notifications.html" data-page-label="notifications">Notifications</a>
+          <a href="settings.html" data-page-label="settings">Settings</a>
+          <a href="help.html" data-page-label="help">Emergency guide</a>
+        </div>
+      </details>
+      <button class="language-button" id="languageToggle" type="button">EN</button>
+    </nav>
+  </header>
+  <main class="dashboard-shell secondary-page camera-page">
+    <div class="camera-page-heading">
+      <div><span class="eyebrow" id="cameraEyebrow">ติดตามสถานการณ์</span><h1 id="cameraPageTitle">กล้องเฝ้าระวัง</h1><p class="secondary-intro" id="cameraIntro">ติดตามภาพจากกล้องจราจรและเหตุการณ์บนแผนที่ Longdo</p></div>
+      <span class="camera-api-state waiting" id="cameraApiState" role="status"><i></i><span>รอโหลดแผนที่</span></span>
+    </div>
+    <section class="camera-search-panel" aria-labelledby="cameraSearchTitle">
+      <div class="camera-search-copy"><strong id="cameraSearchTitle">ค้นหาพื้นที่</strong><small id="cameraSearchHint">ค้นหาจังหวัด อำเภอ ถนน หรือสถานที่ เช่น สมุทรสาคร</small></div>
+      <form class="camera-search-form" id="cameraSearchForm" role="search">
+        <label class="visually-hidden" for="cameraSearchInput" id="cameraSearchLabel">ชื่อพื้นที่หรือสถานที่</label>
+        <input id="cameraSearchInput" type="search" autocomplete="off" placeholder="เช่น สมุทรสาคร" disabled>
+        <button id="cameraSearchButton" type="submit" disabled>ค้นหา</button>
+      </form>
+      <div class="camera-search-popover" id="cameraSearchPopover" hidden>
+        <div class="camera-search-popover-head">
+          <strong id="cameraSearchResultsTitle">ผลการค้นหา</strong>
+          <button class="camera-search-close" id="cameraSearchClose" type="button" aria-label="ปิดผลการค้นหา" title="ปิดผลการค้นหา">&times;</button>
+        </div>
+        <div class="camera-search-results" id="cameraSearchResults" aria-live="polite"></div>
+      </div>
+    </section>
+    <section class="camera-toolbar" aria-label="ตัวควบคุมชั้นข้อมูล">
+      <button class="camera-tool active" id="toggleCameras" type="button" aria-pressed="true"><span>●</span><span id="cameraToggleLabel">กล้อง CCTV</span></button>
+      <button class="camera-tool" id="toggleTraffic" type="button" aria-pressed="false"><span>≋</span><span id="trafficToggleLabel">สภาพจราจร</span></button>
+      <button class="camera-tool" id="toggleEvents" type="button" aria-pressed="false"><span>!</span><span id="eventsToggleLabel">เหตุการณ์</span></button>
+      <button class="camera-tool reset-location" id="resetCameraMap" type="button"><span>⌖</span><span id="resetMapLabel">กลับไปกรุงเทพฯ</span></button>
+    </section>
+    <section class="camera-workspace">
+      <div class="camera-map-shell">
+        <div class="camera-map" id="cameraMap" aria-label="แผนที่กล้อง CCTV ประเทศไทย"></div>
+        <div class="camera-map-message" id="cameraMapMessage" role="alert">
+          <strong id="cameraMessageTitle">ยังไม่ได้ตั้งค่า Longdo API Key</strong>
+          <p id="cameraMessageDetail">ใส่ Key ใหม่ในไฟล์ longdo-config.local.js แล้วเปิดหน้านี้ผ่าน XAMPP</p>
+        </div>
+      </div>
+      <aside class="camera-help-panel">
+        <span class="camera-help-icon" aria-hidden="true">◉</span>
+        <h2 id="cameraHelpTitle">วิธีดูภาพกล้อง</h2>
+        <ol id="cameraHelpSteps"><li>ซูมหรือเลื่อนแผนที่ไปยังพื้นที่ที่ต้องการ</li><li>กดหมุดรูปกล้องบนแผนที่</li><li>ภาพล่าสุดของกล้องจะแสดงในหน้าต่างข้อมูล</li></ol>
+        <div class="camera-notice"><strong id="cameraNoticeTitle">หมายเหตุ</strong><p id="cameraNoticeText">กล้องบางจุดอาจออฟไลน์ ภาพค้าง หรือไม่รองรับในเบราว์เซอร์ขณะนั้น</p></div>
+        <a class="camera-source" href="https://map.longdo.com/docs/v3/javascript/installation" target="_blank" rel="noopener noreferrer" id="cameraSourceLink">เอกสาร Longdo Map API v3</a>
+      </aside>
+    </section>
+  </main>
+  <div class="camera-image-viewer" id="cameraImageViewer" role="dialog" aria-modal="true" aria-labelledby="cameraViewerTitle" hidden>
+    <div class="camera-viewer-backdrop" data-camera-viewer-close></div>
+    <section class="camera-viewer-panel">
+      <header class="camera-viewer-header">
+        <div>
+          <h2 id="cameraViewerTitle">ภาพกล้อง CCTV</h2>
+          <p id="cameraViewerHint">กด Esc หรือปุ่มปิดเพื่อกลับไปยังแผนที่</p>
+        </div>
+        <div class="camera-viewer-actions">
+          <button id="cameraViewerFullscreen" type="button"><span aria-hidden="true">⛶</span><span id="cameraViewerFullscreenLabel">เต็มหน้าจอ</span></button>
+          <button class="camera-viewer-close" id="cameraViewerClose" type="button" aria-label="ปิดภาพขยาย" title="ปิดภาพขยาย">&times;</button>
+        </div>
+      </header>
+      <div class="camera-viewer-content">
+        <div class="camera-viewer-media-host" id="cameraViewerMediaHost"></div>
+        <img id="cameraViewerImage" alt="ภาพจากกล้อง CCTV ที่เลือก">
+        <div class="camera-viewer-error" id="cameraViewerError" hidden>
+          <strong id="cameraViewerErrorTitle">ไม่สามารถโหลดภาพกล้องได้</strong>
+          <p id="cameraViewerErrorDetail">กล้องอาจออฟไลน์หรือเซิร์ฟเวอร์ต้นทางไม่ตอบสนอง กรุณาลองกล้องจุดอื่น</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="longdo-config.local.js"></script>
+  <script src="cameras.js?v=20260927-5"></script>
+</body>
+</html>

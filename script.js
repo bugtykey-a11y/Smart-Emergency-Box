@@ -30,7 +30,10 @@ const UI_COPY = {
     "backend": "BACKEND CONNECTION", "data-connection": "Data Connection", "device-id": "DEVICE ID", "refresh": "Refresh connection",
     "event-log": "EVENT LOG", "alert-history": "Alert History", "date-time": "Date / Time", "event": "Event", "type": "Type", "status": "Status",
     "hardware": "HARDWARE HEALTH", "device-status": "Device Status", "cancel": "Cancel", "footer": "Smart Emergency Box — IoT Safety Monitoring System", "footer-api": "Live API Dashboard",
-    "range-1h": "1 Hour", "range-6h": "6 Hours", "range-24h": "24 Hours", "range-7d": "7 Days"
+    "range-1h": "1 Hour", "range-6h": "6 Hours", "range-24h": "24 Hours", "range-7d": "7 Days",
+    "shortcut-eyebrow": "EMERGENCY INFORMATION", "shortcut-heading": "Quick access",
+    "assembly-shortcut": "Assembly point", "assembly-shortcut-detail": "Route, floor plan and emergency contacts",
+    "extinguisher-shortcut": "How to use a fire extinguisher", "extinguisher-shortcut-detail": "Remember the four PASS steps"
   },
   th: {
     "brand-subtitle": "ศูนย์ควบคุมความปลอดภัย IoT", "last-updated": "อัปเดตล่าสุด", "notifications": "การแจ้งเตือน",
@@ -45,12 +48,15 @@ const UI_COPY = {
     "backend": "การเชื่อมต่อระบบหลังบ้าน", "data-connection": "การเชื่อมต่อข้อมูล", "device-id": "รหัสอุปกรณ์", "refresh": "รีเฟรชการเชื่อมต่อ",
     "event-log": "บันทึกเหตุการณ์", "alert-history": "ประวัติการแจ้งเตือน", "date-time": "วัน / เวลา", "event": "เหตุการณ์", "type": "ประเภท", "status": "สถานะ",
     "hardware": "สถานะฮาร์ดแวร์", "device-status": "สถานะอุปกรณ์", "cancel": "ยกเลิก", "footer": "Smart Emergency Box — ระบบตรวจสอบความปลอดภัย IoT", "footer-api": "แดชบอร์ด API แบบสด",
-    "range-1h": "1 ชั่วโมง", "range-6h": "6 ชั่วโมง", "range-24h": "24 ชั่วโมง", "range-7d": "7 วัน"
+    "range-1h": "1 ชั่วโมง", "range-6h": "6 ชั่วโมง", "range-24h": "24 ชั่วโมง", "range-7d": "7 วัน",
+    "shortcut-eyebrow": "ข้อมูลสำหรับเหตุฉุกเฉิน", "shortcut-heading": "ปุ่มลัดฉุกเฉิน",
+    "assembly-shortcut": "จุดรวมพล", "assembly-shortcut-detail": "ดูเส้นทาง แผนผัง และเบอร์ติดต่อฉุกเฉิน",
+    "extinguisher-shortcut": "วิธีใช้ถังดับเพลิง", "extinguisher-shortcut-detail": "จดจำ 4 ขั้นตอน PASS"
   }
 };
 const PAGE_LABELS = {
-  en: { dashboard: "Dashboard", history: "History", devices: "Devices", notifications: "Notifications", settings: "Settings", help: "Emergency guide" },
-  th: { dashboard: "ภาพรวม", history: "ประวัติ", devices: "อุปกรณ์", notifications: "การแจ้งเตือน", settings: "ตั้งค่า", help: "คู่มือฉุกเฉิน" }
+  en: { dashboard: "Dashboard", history: "History", devices: "Devices", cameras: "CCTV Monitor", notifications: "Notifications", settings: "Settings", help: "Emergency guide" },
+  th: { dashboard: "ภาพรวม", history: "ประวัติ", devices: "อุปกรณ์", cameras: "กล้องเฝ้าระวัง", notifications: "การแจ้งเตือน", settings: "ตั้งค่า", help: "คู่มือฉุกเฉิน" }
 };
 const SYSTEM_STATUSES = ["NORMAL", "WARNING", "EMERGENCY", "OFFLINE"];
 const SENSOR_STATUSES = ["NORMAL", "WARNING", "EMERGENCY", "UNKNOWN"];
@@ -170,7 +176,10 @@ function applyLanguage() {
     ".history-panel .panel-header .eyebrow": "event-log", ".history-panel h2": "alert-history",
     ".alert-table th:nth-child(1)": "date-time", ".alert-table th:nth-child(2)": "event", ".alert-table th:nth-child(3)": "type", ".alert-table th:nth-child(4)": "status",
     ".hardware-panel .panel-header .eyebrow": "hardware", ".hardware-panel h2": "device-status",
-    ".connection-details span": "device-id", ".modal-actions .btn-secondary": "cancel", "footer span:first-child": "footer", "footer span:last-child": "footer-api"
+    ".connection-details span": "device-id", ".modal-actions .btn-secondary": "cancel", "footer span:first-child": "footer", "footer span:last-child": "footer-api",
+    "#emergencyShortcutsEyebrow": "shortcut-eyebrow", "#emergencyShortcutsTitle": "shortcut-heading",
+    "#assemblyShortcutTitle": "assembly-shortcut", "#assemblyShortcutDetail": "assembly-shortcut-detail",
+    "#extinguisherShortcutTitle": "extinguisher-shortcut", "#extinguisherShortcutDetail": "extinguisher-shortcut-detail"
   };
   Object.entries(labels).forEach(([selector, key]) => document.querySelectorAll(selector).forEach((element) => { element.textContent = copy[key]; }));
   document.querySelectorAll(".panel-header").forEach((header) => {

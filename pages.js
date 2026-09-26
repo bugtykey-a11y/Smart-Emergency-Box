@@ -13,7 +13,7 @@ let hasLoaded = false;
 
 const labels = {
   en: {
-    dashboard: "Dashboard", history: "History", devices: "Devices", notifications: "Notifications", settings: "Settings", help: "Emergency guide",
+    dashboard: "Dashboard", history: "History", devices: "Devices", cameras: "CCTV Monitor", notifications: "Notifications", settings: "Settings", help: "Emergency guide",
     historyIntro: "Recent events supplied by the dashboard API.", historyLimit: "The current API returns up to 30 recent alerts. Full searchable history needs a backend endpoint.",
     devicesIntro: "Latest reported status of the ESP32 and connected modules.", notificationsIntro: "Recent notifications supplied by the dashboard API.",
     settingsIntro: "Current device thresholds and mobile notification setup.", settingsPending: "Settings are read only until the backend provides a settings API. Changing these values here would not change the alarm on the device.",
@@ -25,11 +25,19 @@ const labels = {
     channels: "Mobile notification channels", line: "LINE Messaging API", telegram: "Telegram Bot", push: "Web push / Firebase",
     notConfigured: "Awaiting backend setup", currentValues: "Current values", modules: "Hardware modules", empty: "No records in the latest API response.",
     loading: "Loading data…", refresh: "Refresh", retry: "Try again", connected: "API connected", unavailable: "API unavailable", updated: "Last received", details: "View details", close: "Close",
-    helpIntro: "What to do if you suspect a gas leak. This guide remains available without an API connection.",
-    guide1: "Leave the area immediately and keep others away.", guide2: "Do not operate light switches, appliances, vehicles, or anything that may create a spark. Do not smoke or use a flame.", guide3: "From a safe location, call your local emergency service or gas supplier. Do not attempt to repair the leak yourself.", guideSource: "Safety guidance source"
+    helpIntro: "Evacuation information and essential safety instructions. This guide remains available without an API connection.",
+    assemblyTitle: "Assembly point", assemblyDemo: "DEMONSTRATION DATA — replace this plan and location with verified information for the actual building.",
+    assemblyName: "Assembly Point A — North parking area", assemblyRouteTitle: "Recommended evacuation route",
+    assemblyRoute: "Leave the control room through the east emergency exit, follow the green route past the reception area, then continue to the open north parking area.",
+    mapTitle: "Example evacuation plan", mapYouAreHere: "YOU ARE HERE", mapControl: "Control room", mapReception: "Reception", mapExit: "Emergency exit", mapAssembly: "Assembly Point A", mapLift: "DO NOT USE LIFT", mapSmoke: "AVOID SMOKE AREA",
+    avoidTitle: "Do not use during evacuation", avoid1: "Do not use lifts. Use the marked fire escape stairs.", avoid2: "Do not enter the simulated smoke area or return to collect belongings.", avoid3: "Do not block fire lanes or leave the assembly point until attendance is checked.",
+    contactTitle: "Thailand emergency contacts", fireContact: "Fire and public disaster", policeContact: "Emergency police", medicalContact: "Emergency medical service", callLabel: "Call",
+    extinguisherTitle: "How to use a fire extinguisher", extinguisherWarning: "Only attempt a small, early-stage fire when you have the correct extinguisher and a clear escape route behind you. If smoke increases, the fire spreads, or you are unsure: evacuate, close the door if safe, and call 199.",
+    passP: "PULL", passPDetail: "Pull the safety pin.", passA: "AIM", passADetail: "Aim the nozzle at the base of the fire.", passS1: "SQUEEZE", passS1Detail: "Squeeze the operating lever slowly.", passS2: "SWEEP", passS2Detail: "Sweep from side to side at the base of the fire.",
+    exitRule: "Keep the exit behind you at all times. If one extinguisher cannot control the fire, evacuate immediately.", sourceLabel: "Official emergency-number references"
   },
   th: {
-    dashboard: "ภาพรวม", history: "ประวัติ", devices: "อุปกรณ์", notifications: "การแจ้งเตือน", settings: "ตั้งค่า", help: "คู่มือฉุกเฉิน",
+    dashboard: "ภาพรวม", history: "ประวัติ", devices: "อุปกรณ์", cameras: "กล้องเฝ้าระวัง", notifications: "การแจ้งเตือน", settings: "ตั้งค่า", help: "คู่มือฉุกเฉิน",
     historyIntro: "เหตุการณ์ล่าสุดที่ได้รับจาก API ของ Dashboard", historyLimit: "API ปัจจุบันส่งเหตุการณ์ล่าสุดได้สูงสุด 30 รายการ การค้นหาประวัติทั้งหมดต้องมี endpoint ฝั่ง backend เพิ่ม",
     devicesIntro: "สถานะล่าสุดของ ESP32 และอุปกรณ์ที่เชื่อมต่อ", notificationsIntro: "การแจ้งเตือนล่าสุดจาก API ของ Dashboard",
     settingsIntro: "ค่าเกณฑ์ปัจจุบันและการตั้งค่าแจ้งเตือนเข้ามือถือ", settingsPending: "หน้านี้แสดงค่าอย่างเดียวจนกว่าจะมี API สำหรับบันทึก การเปลี่ยนค่าบนหน้าเว็บเพียงอย่างเดียวไม่เปลี่ยนการเตือนของอุปกรณ์",
@@ -41,8 +49,16 @@ const labels = {
     channels: "ช่องทางแจ้งเตือนมือถือ", line: "LINE Messaging API", telegram: "Telegram Bot", push: "Web push / Firebase",
     notConfigured: "รอระบบหลังบ้าน", currentValues: "ค่าปัจจุบัน", modules: "อุปกรณ์ภายใน", empty: "ไม่มีรายการในข้อมูลล่าสุดจาก API",
     loading: "กำลังโหลดข้อมูล…", refresh: "รีเฟรช", retry: "ลองอีกครั้ง", connected: "เชื่อมต่อ API แล้ว", unavailable: "API ไม่พร้อมใช้งาน", updated: "ข้อมูลที่ได้รับล่าสุด", details: "ดูรายละเอียด", close: "ปิด",
-    helpIntro: "แนวทางเมื่อสงสัยว่ามีแก๊สรั่ว คู่มือนี้เปิดอ่านได้แม้ API ไม่ทำงาน",
-    guide1: "ออกจากพื้นที่ทันทีและกันผู้อื่นออกห่าง", guide2: "อย่าเปิดหรือปิดสวิตช์ไฟ เครื่องใช้ไฟฟ้า หรือยานพาหนะ และอย่าทำให้เกิดประกายไฟ ห้ามสูบบุหรี่หรือจุดเปลวไฟ", guide3: "เมื่ออยู่ในที่ปลอดภัย ให้โทรแจ้งหน่วยฉุกเฉินหรือผู้ให้บริการแก๊สในพื้นที่ อย่าซ่อมจุดรั่วด้วยตนเอง", guideSource: "แหล่งอ้างอิงคำแนะนำด้านความปลอดภัย"
+    helpIntro: "ข้อมูลการอพยพและคำแนะนำด้านความปลอดภัยที่จำเป็น หน้านี้เปิดอ่านได้แม้ API ไม่ทำงาน",
+    assemblyTitle: "จุดรวมพล", assemblyDemo: "ข้อมูลจำลอง — ต้องเปลี่ยนแผนผังและสถานที่นี้เป็นข้อมูลที่ผ่านการตรวจสอบของอาคารจริงก่อนใช้งาน",
+    assemblyName: "จุดรวมพล A — ลานจอดรถด้านทิศเหนือ", assemblyRouteTitle: "เส้นทางอพยพที่แนะนำ",
+    assemblyRoute: "ออกจากห้องควบคุมทางประตูฉุกเฉินด้านตะวันออก เดินตามเส้นทางสีเขียวผ่านโถงต้อนรับ แล้วไปยังลานจอดรถโล่งด้านทิศเหนือ",
+    mapTitle: "ตัวอย่างแผนผังอพยพ", mapYouAreHere: "คุณอยู่ที่นี่", mapControl: "ห้องควบคุม", mapReception: "โถงต้อนรับ", mapExit: "ทางออกฉุกเฉิน", mapAssembly: "จุดรวมพล A", mapLift: "ห้ามใช้ลิฟต์", mapSmoke: "ห้ามผ่านพื้นที่มีควัน",
+    avoidTitle: "จุดห้ามใช้ระหว่างอพยพ", avoid1: "ห้ามใช้ลิฟต์ ให้ใช้บันไดหนีไฟตามป้ายเท่านั้น", avoid2: "ห้ามผ่านพื้นที่จำลองที่มีควัน และห้ามย้อนกลับไปเก็บสิ่งของ", avoid3: "ห้ามกีดขวางทางรถฉุกเฉินหรือออกจากจุดรวมพลก่อนตรวจสอบจำนวนคน",
+    contactTitle: "เบอร์ติดต่อฉุกเฉินในประเทศไทย", fireContact: "แจ้งเหตุเพลิงไหม้และสาธารณภัย", policeContact: "เหตุด่วนเหตุร้าย", medicalContact: "การแพทย์ฉุกเฉิน", callLabel: "โทร",
+    extinguisherTitle: "วิธีใช้ถังดับเพลิง", extinguisherWarning: "ใช้กับไฟระยะแรกที่มีขนาดเล็กเท่านั้น ต้องเลือกถังให้ถูกประเภทและมีทางหนีอยู่ด้านหลัง หากควันเพิ่ม ไฟลุกลาม หรือไม่มั่นใจ ให้อพยพ ปิดประตูเมื่อทำได้อย่างปลอดภัย และโทร 199",
+    passP: "PULL — ดึง", passPDetail: "ดึงสลักนิรภัยออก", passA: "AIM — เล็ง", passADetail: "เล็งหัวฉีดไปที่ฐานของไฟ", passS1: "SQUEEZE — บีบ", passS1Detail: "บีบคันบีบอย่างช้า ๆ", passS2: "SWEEP — ส่าย", passS2Detail: "ส่ายหัวฉีดซ้าย–ขวาบริเวณฐานของไฟ",
+    exitRule: "ให้ทางออกอยู่ด้านหลังตัวคุณเสมอ หากถังหนึ่งถังไม่สามารถควบคุมไฟได้ ให้อพยพทันที", sourceLabel: "แหล่งอ้างอิงหมายเลขฉุกเฉินจากหน่วยงานรัฐ"
   }
 };
 
@@ -97,6 +113,7 @@ function render() {
   document.getElementById("refreshPage")?.addEventListener("click", loadSnapshot);
   document.querySelectorAll("[data-alert-index]").forEach((button) => button.addEventListener("click", () => showAlertDetails(Number(button.dataset.alertIndex))));
   document.getElementById("closeDetails")?.addEventListener("click", () => document.getElementById("alertDetails").close());
+  if (page === "help" && location.hash) requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" }));
 }
 
 function dataNotice(t) {
@@ -128,7 +145,38 @@ function showAlertDetails(index) {
 }
 
 function renderHelp(t) {
-  return `<section class="secondary-card emergency-guide"><h2>${t.help}</h2><ol><li>${t.guide1}</li><li>${t.guide2}</li><li>${t.guide3}</li></ol><a href="https://www.socalgas.com/safety/safety-and-prevention/natural-gas-leak" target="_blank" rel="noopener noreferrer">${t.guideSource}</a></section>`;
+  return `<nav class="guide-jump" aria-label="${t.help}"><a href="#assembly-point">${t.assemblyTitle}</a><a href="#fire-extinguisher">${t.extinguisherTitle}</a></nav>
+  <section class="secondary-card guide-section assembly-guide" id="assembly-point">
+    <div class="guide-title"><span class="guide-symbol" aria-hidden="true">📍</span><div><span class="guide-kicker">${t.assemblyTitle}</span><h2>${t.assemblyName}</h2></div></div>
+    <p class="demo-warning">${t.assemblyDemo}</p>
+    <div class="assembly-layout"><div><h3>${t.assemblyRouteTitle}</h3><p>${t.assemblyRoute}</p>
+      <div class="evacuation-map" role="img" aria-label="${t.mapTitle}">
+        <div class="map-room control"><strong>${t.mapControl}</strong><span class="you-marker">● ${t.mapYouAreHere}</span></div>
+        <div class="map-room reception">${t.mapReception}</div><div class="map-room lift">✕ ${t.mapLift}</div>
+        <div class="map-room smoke">⚠ ${t.mapSmoke}</div><div class="map-exit">${t.mapExit} →</div>
+        <div class="route-line"><span>➜</span><span>➜</span><span>➜</span></div><div class="map-assembly"><span>◎</span><strong>${t.mapAssembly}</strong></div>
+      </div></div>
+      <aside class="avoid-card"><h3>${t.avoidTitle}</h3><ul><li>${t.avoid1}</li><li>${t.avoid2}</li><li>${t.avoid3}</li></ul></aside>
+    </div>
+    <h3 class="contact-heading">${t.contactTitle}</h3><div class="emergency-contacts">
+      ${emergencyContact("199", t.fireContact, t.callLabel, "fire")}${emergencyContact("191", t.policeContact, t.callLabel, "police")}${emergencyContact("1669", t.medicalContact, t.callLabel, "medical")}
+    </div>
+  </section>
+  <section class="secondary-card guide-section extinguisher-guide" id="fire-extinguisher">
+    <div class="guide-title"><span class="guide-symbol" aria-hidden="true">🧯</span><div><span class="guide-kicker">PASS METHOD</span><h2>${t.extinguisherTitle}</h2></div></div>
+    <p class="safety-warning">⚠ ${t.extinguisherWarning}</p>
+    <div class="pass-grid">${passStep("P", t.passP, t.passPDetail)}${passStep("A", t.passA, t.passADetail)}${passStep("S", t.passS1, t.passS1Detail)}${passStep("S", t.passS2, t.passS2Detail)}</div>
+    <p class="exit-rule">↩ ${t.exitRule}</p>
+  </section>
+  <p class="guide-sources">${t.sourceLabel}: <a href="https://thailand.prd.go.th/en/content/category/detail/id/2078/iid/382099" target="_blank" rel="noopener noreferrer">กรมประชาสัมพันธ์</a> · <a href="https://www.niems.go.th/1/News/Detail/1118?group=2" target="_blank" rel="noopener noreferrer">สถาบันการแพทย์ฉุกเฉินแห่งชาติ</a></p>`;
+}
+
+function emergencyContact(number, label, callLabel, type) {
+  return `<a class="contact-card ${type}" href="tel:${number}" aria-label="${escapeHtml(callLabel)} ${number}: ${escapeHtml(label)}"><span>${escapeHtml(label)}</span><strong>${number}</strong><small>${escapeHtml(callLabel)} ${number}</small></a>`;
+}
+
+function passStep(letter, title, detail) {
+  return `<article class="pass-step"><span>${letter}</span><div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(detail)}</p></div></article>`;
 }
 
 function renderDevices(t) {
